@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import matter from 'gray-matter';
 import fs from 'fs';
 import path from 'path';
 
@@ -16,12 +17,12 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 function readPosts() {
   const dirRead = path.join(process.cwd(), 'posts');
   const dirs = fs.readdirSync(dirRead);
-  dirs.map((filename) => {
+  const data = dirs.map((filename) => {
     const filePathRead = path.join(process.cwd(), 'posts/' + filename);
     const fileContent = fs.readFileSync(filePathRead, {
       encoding: 'utf-8',
     });
-    console.log(fileContent);
+    return matter(fileContent).data;
   });
-  return '';
+  return data;
 }

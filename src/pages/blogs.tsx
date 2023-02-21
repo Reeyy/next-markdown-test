@@ -1,20 +1,27 @@
 import Blogcard from 'components/blogcard';
 import { NextPage } from 'next';
+import { useEffect, useState } from 'react';
 
 interface Props {}
 
 const BlogsPages: NextPage<Props> = () => {
+  const [posts, setPosts] = useState<
+    { title: string; slug: string; meta: string }[]
+  >([]);
+  const fetchPost = async () => {
+    const res = await fetch('api/posts');
+    const data = await res.json();
+    setPosts(data.info);
+  };
+
+  useEffect(() => {
+    fetchPost();
+  }, []);
   return (
     <div className='max-w-3xl mx-auto p-5 space-y-2'>
-      <Blogcard
-        title='Test'
-        desc=' Lorem ipsum, dolor sit amet consectetur adipisicing elit. Consectetur sapiente necessitatibus incidunt voluptate saepe facilis, quod totam ut neque adipisci magnam dolorem delectus beatae sequi ratione accusantium reprehenderit similique laborum repellat natus quo. Architecto esse sapiente necessitatibus nulla. Illum, qui!'
-      />
-      <Blogcard title='Test' desc='Test' />
-      <Blogcard
-        title='Test'
-        desc=' Lorem ipsum, dolor sit amet consectetur adipisicing elit. Consectetur sapiente necessitatibus incidunt voluptate saepe facilis, quod totam ut neque adipisci magnam dolorem delectus beatae sequi ratione accusantium reprehenderit similique laborum repellat natus quo. Architecto esse sapiente necessitatibus nulla. Illum, qui!'
-      />
+      {posts.map((post) => (
+        <Blogcard key={post.slug} title={post.title} desc={post.meta} />
+      ))}
     </div>
   );
 };

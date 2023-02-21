@@ -7,7 +7,7 @@ interface Props {
 
 const Blogcard: NextPage<Props> = ({ title, desc }) => {
   return (
-    <div className='bg-green-100 p-2 rounded'>
+    <div className='bg-gray-200 p-2 rounded'>
       <h1 className='text-2xl font-bold'>{title}</h1>
       <p className='text-gray-600'>{desc}</p>
     </div>
