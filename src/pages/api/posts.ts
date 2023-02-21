@@ -15,5 +15,13 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
 function readPosts() {
   const dirRead = path.join(process.cwd(), 'posts');
-  return fs.readdirSync(dirRead);
+  const dirs = fs.readdirSync(dirRead);
+  dirs.map((filename) => {
+    const filePathRead = path.join(process.cwd(), 'posts/' + filename);
+    const fileContent = fs.readFileSync(filePathRead, {
+      encoding: 'utf-8',
+    });
+    console.log(fileContent);
+  });
+  return '';
 }
