@@ -23,9 +23,11 @@ const BlogPage: NextPage<Props> = ({ post }) => {
   const { slug } = useRouter().query;
   const { title, content } = post;
   return (
-    <div>
+    <div className='max-w-3xl mx-auto'>
       <h1>{title}</h1>
-      <MDXRemote {...content} />
+      <div className='prose'>
+        <MDXRemote {...content} />
+      </div>
     </div>
   );
 };
@@ -59,7 +61,7 @@ export const getStaticProps: GetStaticProps<Post> = async (context) => {
   const fileContent = fs.readFileSync(filePathRead, {
     encoding: 'utf-8',
   });
-  // const { content, data } = matter(fileContent);
+  const { content, data } = matter(fileContent);
   // Remove the frontmatter from the content and use the mdx compiler
   const source: any = await serialize(fileContent, {
     parseFrontmatter: true,
@@ -67,7 +69,7 @@ export const getStaticProps: GetStaticProps<Post> = async (context) => {
   return {
     props: {
       post: {
-        content: source.compiledSource,
+        content: source,
         title: source.frontmatter!.title,
       },
     },
