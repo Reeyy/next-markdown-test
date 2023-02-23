@@ -1,6 +1,8 @@
 import Blogcard from 'components/blogcard';
+import { readPosts } from 'lib/helper';
 import { InferGetStaticPropsType, NextPage } from 'next';
 import { useState } from 'react';
+import { PostAPi } from 'type/types';
 
 type Props = InferGetStaticPropsType<typeof getStaticProps>;
 const BlogsPages: NextPage<Props> = ({ posts }) => {
@@ -17,20 +19,12 @@ const BlogsPages: NextPage<Props> = ({ posts }) => {
     </div>
   );
 };
-interface PostAPi {
-  info: {
-    title: string;
-    slug: string;
-    meta: string;
-  }[];
-}
+
 export const getStaticProps = async () => {
-  const { info }: PostAPi = await fetch('http://localhost:3000/api/posts').then(
-    (data) => data.json()
-  );
+  const postinfo: PostAPi = readPosts();
 
   return {
-    props: { posts: info },
+    props: { posts: postinfo },
   };
 };
 

@@ -24,8 +24,8 @@ const BlogPage: NextPage<Props> = ({ post }) => {
   const { title, content } = post;
   return (
     <div className='max-w-3xl mx-auto'>
-      <h1>{title}</h1>
-      <div className='prose'>
+      <h1 className='font-semibold text-xl py-5'>{title}</h1>
+      <div className='prose pb-10'>
         <MDXRemote {...content} />
       </div>
     </div>
