@@ -9,19 +9,23 @@ import matter from 'gray-matter';
 import fs from 'fs';
 import path from 'path';
 import { ParsedUrlQuery } from 'querystring';
+import { MDXRemote } from 'next-mdx-remote';
+import { serialize } from 'next-mdx-remote/serialize';
+import { MDXRemoteSerializeResult } from 'next-mdx-remote/dist';
 type Post = {
   post: {
     title: string;
-    content: string;
+    content: MDXRemoteSerializeResult;
   };
 };
 type Props = InferGetStaticPropsType<typeof getStaticProps>;
-const BlogPage: NextPage<Props> = (props) => {
+const BlogPage: NextPage<Props> = ({ post }) => {
   const { slug } = useRouter().query;
+  const { title, content } = post;
   return (
     <div>
-      <h1>{props.post.title}</h1>
-      <h1>{props.post.content}</h1>
+      <h1>{title}</h1>
+      <MDXRemote {...content} />
     </div>
   );
 };
@@ -56,10 +60,11 @@ export const getStaticProps: GetStaticProps<Post> = async (context) => {
     encoding: 'utf-8',
   });
   const { content, data } = matter(fileContent);
+  const source = await serialize(content);
   return {
     props: {
       post: {
-        content,
+        content: source,
         title: data.title,
       },
     },
