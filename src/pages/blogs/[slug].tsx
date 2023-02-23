@@ -59,13 +59,16 @@ export const getStaticProps: GetStaticProps<Post> = async (context) => {
   const fileContent = fs.readFileSync(filePathRead, {
     encoding: 'utf-8',
   });
-  const { content, data } = matter(fileContent);
-  const source = await serialize(content);
+  // const { content, data } = matter(fileContent);
+  // Remove the frontmatter from the content and use the mdx compiler
+  const source: any = await serialize(fileContent, {
+    parseFrontmatter: true,
+  });
   return {
     props: {
       post: {
-        content: source,
-        title: data.title,
+        content: source.compiledSource,
+        title: source.frontmatter!.title,
       },
     },
   };
