@@ -22,6 +22,8 @@ type Props = InferGetStaticPropsType<typeof getStaticProps>;
 const BlogPage: NextPage<Props> = ({ post }) => {
   const { slug } = useRouter().query;
   const { title, content } = post;
+  const router = useRouter();
+  if (router.isFallback) return <div>Loading...</div>; //
   return (
     <div className='max-w-3xl mx-auto'>
       <h1 className='font-semibold text-xl py-5'>{title}</h1>
@@ -47,7 +49,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   //!end of getting all the markdown files
   return {
     paths,
-    fallback: false,
+    fallback: 'blocking',
   };
 };
 interface ISTaticProps extends ParsedUrlQuery {
@@ -55,23 +57,29 @@ interface ISTaticProps extends ParsedUrlQuery {
 }
 
 export const getStaticProps: GetStaticProps<Post> = async (context) => {
-  const { params } = context;
-  const { slug } = params as ISTaticProps;
-  const filePathRead = path.join(process.cwd(), 'posts/' + slug + '.md');
-  const fileContent = fs.readFileSync(filePathRead, {
-    encoding: 'utf-8',
-  });
-  const { content, data } = matter(fileContent);
-  // Remove the frontmatter from the content and use the mdx compiler
-  const source: any = await serialize(fileContent, {
-    parseFrontmatter: true,
-  });
-  return {
-    props: {
-      post: {
-        content: source,
-        title: source.frontmatter!.title,
+  try {
+    const { params } = context;
+    const { slug } = params as ISTaticProps;
+    const filePathRead = path.join(process.cwd(), 'posts/' + slug + '.md');
+    const fileContent = fs.readFileSync(filePathRead, {
+      encoding: 'utf-8',
+    });
+    const { content, data } = matter(fileContent);
+    // Remove the frontmatter from the content and use the mdx compiler
+    const source: any = await serialize(fileContent, {
+      parseFrontmatter: true,
+    });
+    return {
+      props: {
+        post: {
+          content: source,
+          title: source.frontmatter!.title,
+        },
       },
-    },
-  };
+    };
+  } catch (error) {
+    return {
+      notFound: true,
+    };
+  }
 };
