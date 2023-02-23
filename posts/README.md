@@ -1,6 +1,6 @@
 ---
 title: Test
-slug: test-md
+slug: README
 meta: test
 ---
 
